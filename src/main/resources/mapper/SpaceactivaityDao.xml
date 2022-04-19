@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.SpaceactivaityDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.Spaceactivaity">
+        <!--@Table spaceactivaity-->
+        <result property="said" column="said" jdbcType="INTEGER"/>
+        <result property="userid" column="userid" jdbcType="INTEGER"/>
+        <result property="astext" column="astext" jdbcType="VARCHAR"/>
+        <result property="image1" column="image1" jdbcType="VARCHAR"/>
+        <result property="image2" column="image2" jdbcType="VARCHAR"/>
+        <result property="sadate" column="sadate" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          said, userid, astext, image1, image2, sadate
+        from bb.spaceactivaity
+        where said = #{said}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          said, userid, astext, image1, image2, sadate
+        from bb.spaceactivaity
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          said, userid, astext, image1, image2, sadate
+        from bb.spaceactivaity
+        <where>
+            <if test="said != null">
+                and said = #{said}
+            </if>
+            <if test="userid != null">
+                and userid = #{userid}
+            </if>
+            <if test="astext != null and astext != ''">
+                and astext = #{astext}
+            </if>
+            <if test="image1 != null and image1 != ''">
+                and image1 = #{image1}
+            </if>
+            <if test="image2 != null and image2 != ''">
+                and image2 = #{image2}
+            </if>
+            <if test="sadate != null and sadate != ''">
+                and sadate = #{sadate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="said" useGeneratedKeys="true">
+        insert into bb.spaceactivaity(userid, astext, image1, image2, sadate)
+        values (#{userid}, #{astext}, #{image1}, #{image2}, #{sadate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bb.spaceactivaity
+        <set>
+            <if test="userid != null">
+                userid = #{userid},
+            </if>
+            <if test="astext != null and astext != ''">
+                astext = #{astext},
+            </if>
+            <if test="image1 != null and image1 != ''">
+                image1 = #{image1},
+            </if>
+            <if test="image2 != null and image2 != ''">
+                image2 = #{image2},
+            </if>
+            <if test="sadate != null and sadate != ''">
+                sadate = #{sadate},
+            </if>
+        </set>
+        where said = #{said}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bb.spaceactivaity where said = #{said}
+    </delete>
+
+</mapper>

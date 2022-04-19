@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.FriendrequestDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.Friendrequest">
+        <!--@Table friendrequest-->
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="requestid" column="requestid" jdbcType="INTEGER"/>
+        <result property="requestdate" column="requestdate" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          uid, requestid, requestdate
+        from bb.friendrequest
+        where uid = #{uid}
+    </select>
+
+    <!--查询是否已经请求对方为好友-->
+    <select id="queryByUidAndResid" resultType="java.lang.Integer">
+        select
+        count(1)
+        from bb.friendrequest
+        where uid=#{uid} and requestid=#{requestid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          uid, requestid, requestdate
+        from bb.friendrequest
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          uid, requestid, requestdate
+        from bb.friendrequest
+        <where>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="requestid != null">
+                and requestid = #{requestid}
+            </if>
+            <if test="requestdate != null and requestdate != ''">
+                and requestdate = #{requestdate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
+        insert into bb.friendrequest(uid,requestid, requestdate)
+        values (#{uid},#{requestid}, #{requestdate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bb.friendrequest
+        <set>
+            <if test="requestid != null">
+                requestid = #{requestid},
+            </if>
+            <if test="requestdate != null and requestdate != ''">
+                requestdate = #{requestdate},
+            </if>
+        </set>
+        where uid = #{uid}
+    </update>
+
+    <!--通过主键删除-现在没有主键了，这方法不能用-->
+    <delete id="deleteById">
+        delete from bb.friendrequest where uid = #{uid}
+    </delete>
+
+    <delete id="deleteRequest">
+        delete from bb.friendrequest where uid=#{uid} and requestid=#{requestid}
+    </delete>
+
+</mapper>

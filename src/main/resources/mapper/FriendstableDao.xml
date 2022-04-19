@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.FriendstableDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.Friendstable">
+        <!--@Table friendstable-->
+        <result property="userid" column="userid" jdbcType="INTEGER"/>
+        <result property="friendid" column="friendid" jdbcType="INTEGER"/>
+        <result property="adddate" column="adddate" jdbcType="VARCHAR"/>
+        <result property="relationship" column="relationship" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="isFriend" resultType="java.lang.Boolean">
+        select
+        count(1)
+        from bb.friendstable
+        where userid=#{myid} and friendid=#{friendid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          userid, friendid, adddate, relationship, remark
+        from bb.friendstable
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="queryFidByuid" resultType="java.lang.Integer">
+        select uid from
+        (select bb.friendstable.friendid from bb.friendstable where bb.friendstable.userid=#{uid})
+        as fid left join bb.user on bb.user.uid=fid.friendid
+        where bb.user.ustate='在线'
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          userid, friendid, adddate, relationship, remark
+        from bb.friendstable
+        <where>
+            <if test="userid != null">
+                and userid = #{userid}
+            </if>
+            <if test="friendid != null">
+                and friendid = #{friendid}
+            </if>
+            <if test="adddate != null and adddate != ''">
+                and adddate = #{adddate}
+            </if>
+            <if test="relationship != null and relationship != ''">
+                and relationship = #{relationship}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into bb.friendstable(userid, friendid, adddate, remark)
+        values (#{userid}, #{friendid}, #{adddate}, #{remark})
+    </insert>
+
+    <update id="updateUnReadNum">
+        update bb.friendstable
+        set bb.friendstable.unreadnum=#{unreadnum}
+        where userid=#{userid} and friendid=#{friendid}
+    </update>
+
+    <delete id="deleteFriend">
+        delete from bb.friendstable
+        where bb.friendstable.userid=#{userid} and bb.friendstable.friendid=#{friendid}
+    </delete>
+
+
+</mapper>

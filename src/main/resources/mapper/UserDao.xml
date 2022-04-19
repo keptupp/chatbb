@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.User">
+        <!--@Table user-->
+        <!--这个数据不全，去掉了一些信息，密码，token,emailcode等都不需要返回前台去-->
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="uemail" column="uemail" jdbcType="VARCHAR"/>
+        <result property="ugender" column="ugender" jdbcType="VARCHAR"/>
+        <result property="upersonalizedsignature" column="uPersonalizedsignature" jdbcType="VARCHAR"/>
+        <result property="ustate" column="ustate" jdbcType="VARCHAR"/>
+        <result property="unickname" column="unickname" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          uid, upassword, uemail, uemailcode, ugender, uPersonalizedsignature, ustate, unickname
+        from bb.user
+        where uid = #{uid}
+    </select>
+
+    <!--批量uid查询===================新学的,下面一个为两表连接查询，也可以达到这个-->
+    <select id="queryByUidList" resultMap="BaseResultMap">
+        select
+        uid,ustate,unickname,uPersonalizedsignature
+        from bb.user
+        <foreach collection="uidlist" item="item" open="where uid in(" close=")" separator=",">
+            #{item.requestid}
+        </foreach>
+    </select>
+
+    <!--再尝试一下两表查询,查询用户的好友《现在有点变动，想要把用户之间最后一条消息也加进来》-->
+    <select id="queryFriendList" resultMap="BaseResultMap">
+        select
+        bb.user.uid,bb.user.ustate,bb.user.unickname,bb.user.uPersonalizedsignature,bb.user.avatar,FD.unreadnum
+        from bb.user
+        right join
+        (select bb.friendstable.friendid,bb.friendstable.unreadnum from bb.friendstable where bb.friendstable.userid=#{uid})
+        AS  FD
+        on bb.user.uid=FD.friendid
+    </select>
+
+    <!--通过昵称查询是否有这个人-->
+    <select id="queryByunickname" resultType="java.lang.Boolean">
+        select
+          count(1)
+        from bb.user
+        where unickname = #{unickname}
+    </select>
+
+    <select id="queryByEmail" resultType="java.lang.Boolean">
+        select
+          count(1)
+        from bb.user
+        where uemail = #{email}
+    </select>
+
+
+    <!--忘记密码，通过邮箱找回，先返回uid，到时候好改密码，不然不知道是谁要改-->
+    <select id="queryByEmailObject" resultType="java.lang.Integer">
+        select
+        uid
+        from bb.user
+        where uemail = #{uemail}
+    </select>
+
+    <!--登录验证-->
+    <select id="queryByUidAndUpw" resultType="java.lang.Boolean">
+        select
+          count(1)
+        from bb.user
+        where uid = #{uid} and upassword=#{upassword}
+    </select>
+
+    <!--验证token-->
+    <select id="checkToken" resultMap="BaseResultMap">
+        select
+          uid, uemail, ugender, uPersonalizedsignature, ustate, unickname,avatar
+        from bb.user
+        where token=#{token}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          uid, upassword, uemail, uemailcode, ugender, uPersonalizedsignature, ustate, unickname
+        from bb.user
+        limit #{offset}, #{limit}
+    </select>
+
+
+    <!--模糊查询，根据uid和unickname-->
+    <select id="searchUserByidname" resultMap="BaseResultMap">
+        select
+        uid,uemail,ugender,uPersonalizedsignature,ustate,unickname,avatar
+        from bb.user
+        where unickname like concat('%',#{uidoruname},'%') or uid like concat('%',#{uidoruname},'%')
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          uid, upassword, uemail, uemailcode, ugender, uPersonalizedsignature, ustate, unickname
+        from bb.user
+        <where>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="upassword != null and upassword != ''">
+                and upassword = #{upassword}
+            </if>
+            <if test="uemail != null and uemail != ''">
+                and uemail = #{uemail}
+            </if>
+            <if test="uemailcode != null and uemailcode != ''">
+                and uemailcode = #{uemailcode}
+            </if>
+            <if test="ugender != null and ugender != ''">
+                and ugender = #{ugender}
+            </if>
+            <if test="upersonalizedsignature != null and upersonalizedsignature != ''">
+                and uPersonalizedsignature = #{upersonalizedsignature}
+            </if>
+            <if test="ustate != null and ustate != ''">
+                and ustate = #{ustate}
+            </if>
+            <if test="unickname != null and unickname != ''">
+                and unickname = #{unickname}
+            </if>
+        </where>
+    </select>
+
+    <!--新增一个用户-->
+    <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
+        insert into bb.user(upassword, uemail, uemailcode, unickname)
+        values (#{upassword}, #{uemail}, #{uemailcode}, #{unickname})
+    </insert>
+
+
+
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bb.user
+        <set>
+            <if test="upassword != null and upassword != ''">
+                upassword = #{upassword},
+            </if>
+            <if test="uemail != null and uemail != ''">
+                uemail = #{uemail},
+            </if>
+            <if test="uemailcode != null and uemailcode != ''">
+                uemailcode = #{uemailcode},
+            </if>
+            <if test="ugender != null and ugender != ''">
+                ugender = #{ugender},
+            </if>
+            <if test="upersonalizedsignature != null and upersonalizedsignature != ''">
+                uPersonalizedsignature = #{upersonalizedsignature},
+            </if>
+            <if test="ustate != null and ustate != ''">
+                ustate = #{ustate},
+            </if>
+            <if test="unickname != null and unickname != ''">
+                unickname = #{unickname},
+            </if>
+        </set>
+        where uid = #{uid}
+    </update>
+
+    <!--更新用户是否在线的状态-->
+    <update id="updataStateById">
+        update bb.user
+        set bb.user.ustate=#{ustate}
+        where bb.user.uid=#{uid}
+    </update>
+
+    <!--更新token，token后来加的，所以上面的条件判断就没有，只能自己写-->
+    <update id="updataToken">
+        update bb.user
+        set token=#{token}
+        where uid=#{uid}
+    </update>
+
+
+    <!--更改密码-->
+    <update id="changepassword">
+        update bb.user
+        set upassword=#{upassword}
+        where uid=#{uid} and uemailcode=#{uemailcode}
+    </update>
+    
+    
+    <!--用户修改个性签名-->
+    <update id="updateSignature">
+        update bb.user
+        set bb.user.uPersonalizedsignature=#{uPersonalizedsignature}
+        where bb.user.uid=#{uid}
+    </update>
+
+
+    <!--更新用户头像地址-->
+    <update id="updateAvatarById">
+        update bb.user
+        set bb.user.avatar=#{avatar}
+        where bb.user.uid=#{uid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bb.user where uid = #{uid}
+    </delete>
+    
+
+</mapper>

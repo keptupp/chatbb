@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.MassagesDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.Massages">
+        <!--@Table massages-->
+        <result property="mid" column="mid" jdbcType="INTEGER"/>
+        <result property="userid" column="userid" jdbcType="INTEGER"/>
+        <result property="friendid" column="friendid" jdbcType="INTEGER"/>
+        <result property="massage" column="massage" jdbcType="VARCHAR"/>
+        <result property="massagedate" column="massagedate" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          mid, userid, friendid, massage, massagedate
+        from bb.massages
+        where mid = #{mid}
+    </select>
+
+    <!--请求二人聊天信息，大到小取10条，再小到大排序-->
+    <select id="requestMassage" resultMap="BaseResultMap">
+        select * from (select *
+        from bb.massages
+        where (userid=#{userid} and friendid=#{friendid})
+        or (userid=#{friendid} and friendid=#{userid})
+        order by mid desc limit 10) as mg order by mid
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          mid, userid, friendid, massage, massagedate
+        from bb.massages
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          mid, userid, friendid, massage, massagedate
+        from bb.massages
+        <where>
+            <if test="mid != null">
+                and mid = #{mid}
+            </if>
+            <if test="userid != null">
+                and userid = #{userid}
+            </if>
+            <if test="friendid != null">
+                and friendid = #{friendid}
+            </if>
+            <if test="massage != null and massage != ''">
+                and massage = #{massage}
+            </if>
+            <if test="massagedate != null">
+                and massagedate = #{massagedate}
+            </if>
+        </where>
+    </select>
+
+    <!--查询最后一条数据，放在好友列表里面-->
+    <select id="queryLastMessage" resultMap="BaseResultMap">
+        select bb.massages.massage,bb.massages.massagedate
+        from bb.massages
+        where (bb.massages.userid=#{uid} and bb.massages.friendid=#{fid})
+        or (bb.massages.userid=#{fid} and bb.massages.friendid=#{uid})
+        order by mid desc limit 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="mid" useGeneratedKeys="true">
+        insert into bb.massages(userid, friendid, massage, massagedate)
+        values (#{userid}, #{friendid}, #{massage}, #{massagedate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bb.massages
+        <set>
+            <if test="userid != null">
+                userid = #{userid},
+            </if>
+            <if test="friendid != null">
+                friendid = #{friendid},
+            </if>
+            <if test="massage != null and massage != ''">
+                massage = #{massage},
+            </if>
+            <if test="massagedate != null and massage != ''">
+                massagedate = #{massagedate},
+            </if>
+        </set>
+        where mid = #{mid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bb.massages where mid = #{mid}
+    </delete>
+
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chatbb.dao.LikerecordDao">
+
+    <resultMap id="BaseResultMap" type="com.chatbb.entity.Likerecord">
+        <!--@Table likerecord-->
+        <result property="lrid" column="lrid" jdbcType="INTEGER"/>
+        <result property="said" column="said" jdbcType="INTEGER"/>
+        <result property="userid" column="userid" jdbcType="INTEGER"/>
+        <result property="unickname" column="unickname" jdbcType="VARCHAR"/>
+        <result property="isrecord" column="isrecord" jdbcType="BOOLEAN"/>
+        <result property="record" column="record" jdbcType="VARCHAR"/>
+        <result property="islike" column="islike" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          lrid, said, userid, isrecord, record, islike
+        from bb.likerecord
+        where lrid = #{lrid}
+    </select>
+    
+    
+    <!--根据用户的空间的id去点赞和评论的表中，查出空间id等于这个空间动态的,改动了一下，把用户的昵称字段加进来了-->
+    <select id="queryBySaid" resultMap="BaseResultMap">
+        select bb.likerecord.*,bb.user.unickname
+        from bb.likerecord
+        left join bb.user on bb.likerecord.userid=bb.user.uid
+        where bb.likerecord.said=#{said}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          lrid, said, userid, isrecord, record, islike
+        from bb.likerecord
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询是否评论或者点赞过-->
+    <select id="isRecord" resultType="java.lang.Integer">
+        select count(1) from likerecord where said=#{said} and userid=#{userid}
+    </select>
+
+    <select id="isLike" resultMap="BaseResultMap">
+        select * from bb.likerecord where said=#{said} and userid=#{userid}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          lrid, said, userid, isrecord, record, islike
+        from bb.likerecord
+        <where>
+            <if test="lrid != null">
+                and lrid = #{lrid}
+            </if>
+            <if test="said != null">
+                and said = #{said}
+            </if>
+            <if test="userid != null">
+                and userid = #{userid}
+            </if>
+            <if test="isrecord != null">
+                and isrecord = #{isrecord}
+            </if>
+            <if test="record != null and record != ''">
+                and record = #{record}
+            </if>
+            <if test="islike != null">
+                and islike = #{islike}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="lrid" useGeneratedKeys="true">
+        insert into bb.likerecord(said, userid, isrecord, record, islike)
+        values (#{said}, #{userid}, #{isrecord}, #{record}, #{islike})
+    </insert>
+
+    <!--插入评论-->
+    <insert id="insertRecord">
+        insert into likerecord (said,userid,record,isrecord) values (#{said},#{userid},#{record},1);
+    </insert>
+
+    <!--插入点赞-->
+    <insert id="insertLike">
+        insert into likerecord (said, userid,islike) values (#{said},#{userid},#{islike});
+    </insert>
+
+    <!--更新用户的评论-->
+    <update id="updateBySaidUserid">
+        update bb.likerecord
+        set record=#{record},isrecord=1
+        where said=#{said} and userid=#{userid}
+    </update>
+
+    <!--点赞或取消点赞-->
+    <update id="updateLike">
+        update bb.likerecord
+        set islike=#{islike}
+        where said=#{said} and userid=#{userid}
+    </update>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bb.likerecord
+        <set>
+            <if test="said != null">
+                said = #{said},
+            </if>
+            <if test="userid != null">
+                userid = #{userid},
+            </if>
+            <if test="isrecord != null">
+                isrecord = #{isrecord},
+            </if>
+            <if test="record != null and record != ''">
+                record = #{record},
+            </if>
+            <if test="islike != null">
+                islike = #{islike},
+            </if>
+        </set>
+        where lrid = #{lrid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bb.likerecord where lrid = #{lrid}
+    </delete>
+
+</mapper>

@@ -52,4 +52,20 @@ public interface SpaceactivaityService {
      */
     boolean deleteById(Integer said);
 
+
+    /**
+     * 根据用户id去查询其好友的空间动态
+     * @param userid
+     * @return
+     */
+    List<Spaceactivaity> requestFriendsSpaceActivity(Integer userid);
+
+
+    /**
+     * 请求一个用户的全部空间动态
+     * @param userid
+     * @return
+     */
+    List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid);
+
 }

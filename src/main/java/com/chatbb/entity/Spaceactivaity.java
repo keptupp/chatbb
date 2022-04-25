@@ -1,6 +1,7 @@
 package com.chatbb.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * (Spaceactivaity)实体类
@@ -18,6 +19,16 @@ public class Spaceactivaity implements Serializable {
     * 用户id
     */
     private Integer userid;
+
+    /**
+     * 用户的昵称，通过sql补齐
+     */
+    private String unickname;
+
+    /**
+     * 用户的头像，通过sql补齐
+     */
+    private String avatar;
     /**
     * 动态文字
     */
@@ -36,6 +47,17 @@ public class Spaceactivaity implements Serializable {
     private String sadate;
 
 
+    /**
+     * 点赞数,数据库没有的字段
+     */
+    private Integer like;
+
+    /**
+     * 数据库没有的字段
+     */
+    private List<Likerecord> likeRecords;
+
+
     public Integer getSaid() {
         return said;
     }
@@ -50,6 +72,22 @@ public class Spaceactivaity implements Serializable {
 
     public void setUserid(Integer userid) {
         this.userid = userid;
+    }
+
+    public String getUnickname() {
+        return unickname;
+    }
+
+    public void setUnickname(String unickname) {
+        this.unickname = unickname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getAstext() {
@@ -84,15 +122,36 @@ public class Spaceactivaity implements Serializable {
         this.sadate = sadate;
     }
 
+
+    public Integer getLike() {
+        return like;
+    }
+
+    public void setLike(Integer like) {
+        this.like = like;
+    }
+
+    public List<Likerecord> getLikeRecords() {
+        return likeRecords;
+    }
+
+    public void setLikeRecords(List<Likerecord> likeRecords) {
+        this.likeRecords = likeRecords;
+    }
+
     @Override
     public String toString() {
         return "Spaceactivaity{" +
                 "said=" + said +
                 ", userid=" + userid +
+                ", unickname='" + unickname + '\'' +
+                ", avatar='" + avatar + '\'' +
                 ", astext='" + astext + '\'' +
                 ", image1='" + image1 + '\'' +
                 ", image2='" + image2 + '\'' +
                 ", sadate='" + sadate + '\'' +
+                ", like=" + like +
+                ", likeRecords=" + likeRecords +
                 '}';
     }
 }

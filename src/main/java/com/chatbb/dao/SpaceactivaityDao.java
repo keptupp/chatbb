@@ -31,6 +31,12 @@ public interface SpaceactivaityDao {
      */
     List<Spaceactivaity> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
 
+    //查询某个用户的空间动态
+    List<Spaceactivaity> queryUserSpaceActivityByUid(Integer userid);
+
+    //查询改好友的空间动态
+    List<Spaceactivaity> queryFriendsSpaceActivityByUid(Integer userid);
+
 
     /**
      * 通过实体作为筛选条件查询

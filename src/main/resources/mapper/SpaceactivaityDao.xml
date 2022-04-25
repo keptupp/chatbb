@@ -28,6 +28,20 @@
         limit #{offset}, #{limit}
     </select>
 
+    <!--查询某个用户的全部空间动态-->
+    <select id="queryUserSpaceActivityByUid" resultMap="BaseResultMap">
+        select bb.spaceactivaity.*,bb.user.unickname,bb.user.avatar from bb.spaceactivaity
+        inner join bb.user on bb.user.uid=bb.spaceactivaity.userid where bb.spaceactivaity.userid=#{userid} order by bb.spaceactivaity.said desc
+    </select>
+
+    <!--查询某个用户好友的空间动态，这里又新加了一个，把好友的昵称和头像链接加入-->
+    <select id="queryFriendsSpaceActivityByUid" resultMap="BaseResultMap">
+        select * from bb.spaceactivaity
+        inner join
+        (select bb.friendstable.friendid,bb.user.avatar,bb.user.unickname from bb.friendstable left join bb.user on bb.user.uid=bb.friendstable.friendid where bb.friendstable.userid=#{userid})
+        AS ID on ID.friendid=bb.spaceactivaity.userid order by bb.spaceactivaity.said desc
+    </select>
+
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="BaseResultMap">
         select

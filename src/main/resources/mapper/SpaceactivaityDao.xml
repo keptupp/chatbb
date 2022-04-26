@@ -31,7 +31,7 @@
     <!--查询某个用户的全部空间动态-->
     <select id="queryUserSpaceActivityByUid" resultMap="BaseResultMap">
         select bb.spaceactivaity.*,bb.user.unickname,bb.user.avatar from bb.spaceactivaity
-        inner join bb.user on bb.user.uid=bb.spaceactivaity.userid where bb.spaceactivaity.userid=#{userid} order by bb.spaceactivaity.said desc
+        inner join bb.user on bb.user.uid=bb.spaceactivaity.userid where bb.spaceactivaity.userid=#{userid} order by bb.spaceactivaity.said desc limit 0,#{num}
     </select>
 
     <!--查询某个用户好友的空间动态，这里又新加了一个，把好友的昵称和头像链接加入-->

@@ -44,8 +44,8 @@ public class SpaceactivaityController {
     }
 
     @GetMapping("requestOneUserSpaceactivity")
-    public List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid){
-        return spaceactivaityService.requestOneUserSpaceactivity(userid);
+    public List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid,Integer num){
+        return spaceactivaityService.requestOneUserSpaceactivity(userid,num);
     }
 
 }

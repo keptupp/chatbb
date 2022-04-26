@@ -132,9 +132,9 @@ public class SpaceactivaityServiceImpl implements SpaceactivaityService {
      * @return
      */
     @Override
-    public List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid) {
+    public List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid,Integer num) {
         //请求出该用户的空间动态
-        List<Spaceactivaity> spaceactivaities=this.spaceactivaityDao.queryUserSpaceActivityByUid(userid);
+        List<Spaceactivaity> spaceactivaities=this.spaceactivaityDao.queryUserSpaceActivityByUid(userid,num);
         //然后请求出每一条动态下对应的评论
         return this.addRecord(spaceactivaities);
     }

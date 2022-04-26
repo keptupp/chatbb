@@ -62,10 +62,10 @@ public interface SpaceactivaityService {
 
 
     /**
-     * 请求一个用户的全部空间动态
+     * 请求一个用户的num条空间动态
      * @param userid
      * @return
      */
-    List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid);
+    List<Spaceactivaity> requestOneUserSpaceactivity(Integer userid,Integer num);
 
 }
